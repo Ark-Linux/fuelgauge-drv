@@ -20,11 +20,8 @@
 #include "bq40z50_drv.h"
 
 #define I2C_FILE_NAME   "/dev/i2c-5"
-//#define I2C_ADDR        0x38
-//#define I2C_ADDR        0x20
 
-//the I2C addr will change, 0x38 or 0x20
-unsigned int I2C_ADDR = 0x16;
+unsigned int I2C_ADDR = 0x0B; //7 bit address, (the 8 bit address is 0x16)
 
 static int fd;
 
