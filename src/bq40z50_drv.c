@@ -215,6 +215,14 @@ int bq40z50_i2c_read(unsigned char addr, unsigned char *reg_w_list, unsigned cha
 
     if(i2c_read(fd, addr, reg_w_list, reg_w_len, buf, data_len) == 0)
     {
+        printf("read reg 0x%x = ",reg_w_list[0]);
+        for(i = 0; i < data_len; i++)
+        {
+            val[i] = buf[i];
+            printf("%02x ",val[i]);
+        }
+        printf("\n");
+
         return 0;
     }
 
@@ -257,6 +265,64 @@ static int bq40z50_ManufacturerBlockAccess_Read(unsigned short r_data_reg)
     return -1;
 }
 
+int bq40z50_get_Battery_Temperature(void)
+{
+    unsigned char buf[2];
+    unsigned char reg;
+
+    unsigned short battery_temperature = 0;
+
+    //Temperature
+    reg = 0x08;
+    if(bq40z50_i2c_read(I2C_ADDR, &reg, 1, buf, 2) != 0)
+    {
+        return -1;
+    }
+
+    battery_temperature = (buf[1]<<8) | buf[0];
+
+    printf("get battery Temperature %d * 0.1K\n", battery_temperature);
+}
+
+
+int bq40z50_get_Battery_Voltage(void)
+{
+    unsigned char buf[2];
+    unsigned char reg;
+
+    unsigned short battery_voltage = 0;
+
+    //Voltage
+    reg = 0x09;
+    if(bq40z50_i2c_read(I2C_ADDR, &reg, 1, buf, 2) != 0)
+    {
+        return -1;
+    }
+
+    battery_voltage = (buf[1]<<8) | buf[0];
+
+    printf("get battery Voltage %dmV\n", battery_voltage);
+}
+
+int bq40z50_get_Battery_Current(void)
+{
+    unsigned char buf[2];
+    unsigned char reg;
+
+    signed short battery_current = 0;
+
+    //Current
+    reg = 0x0A;
+    if(bq40z50_i2c_read(I2C_ADDR, &reg, 1, buf, 2) != 0)
+    {
+        return -1;
+    }
+
+    battery_current = (signed short)((buf[1]<<8) | buf[0]);
+
+    printf("get battery Current %dmA\n", battery_current);
+}
+
 
 int main(int argc, char* argv[])
 {
@@ -264,6 +330,7 @@ int main(int argc, char* argv[])
 
     unsigned short read_data;
     unsigned char buf[64];
+    unsigned char val[64];
 
     unsigned char reg;
 
@@ -294,25 +361,11 @@ int main(int argc, char* argv[])
         return -1;
     }
 
-    //test write
-    bq40z50_ManufacturerBlockAccess_Send(0x0021);
+    bq40z50_get_Battery_Temperature();
 
-    //test read
-    read_data = bq40z50_ManufacturerBlockAccess_Read(0x0001);
-    read_data = bq40z50_ManufacturerBlockAccess_Read(0x0006);
+    bq40z50_get_Battery_Voltage();
 
-    //Temperature
-    reg = 0x08;
-    bq40z50_i2c_read(I2C_ADDR, &reg, 1, buf, 2);
-
-    //Voltage
-    reg = 0x09;
-    bq40z50_i2c_read(I2C_ADDR, &reg, 1, buf, 2);
-
-    //Current
-    reg = 0x0A;
-    bq40z50_i2c_read(I2C_ADDR, &reg, 1, buf, 2);
-
+    bq40z50_get_Battery_Current();
 
     close(fd);
 
