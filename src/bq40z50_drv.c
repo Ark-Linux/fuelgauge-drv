@@ -267,14 +267,14 @@ static int bq40z50_ManufacturerBlockAccess_Read(unsigned short r_data_reg)
 
 int bq40z50_get_Battery_Temperature(void)
 {
-    unsigned char buf[2];
+    unsigned char buf[16];
     unsigned char reg;
 
     unsigned short battery_temperature = 0;
 
     //Temperature
     reg = 0x08;
-    if(bq40z50_i2c_read(I2C_ADDR, &reg, 1, buf, 2) != 0)
+    if(bq40z50_i2c_read(I2C_ADDR, &reg, 1, buf, 3) != 0)
     {
         return -1;
     }
@@ -287,14 +287,14 @@ int bq40z50_get_Battery_Temperature(void)
 
 int bq40z50_get_Battery_Voltage(void)
 {
-    unsigned char buf[2];
+    unsigned char buf[16];
     unsigned char reg;
 
     unsigned short battery_voltage = 0;
 
     //Voltage
     reg = 0x09;
-    if(bq40z50_i2c_read(I2C_ADDR, &reg, 1, buf, 2) != 0)
+    if(bq40z50_i2c_read(I2C_ADDR, &reg, 1, buf, 3) != 0)
     {
         return -1;
     }
@@ -306,7 +306,7 @@ int bq40z50_get_Battery_Voltage(void)
 
 int bq40z50_get_Battery_Current(void)
 {
-    unsigned char buf[2];
+    unsigned char buf[16];
     unsigned char reg;
 
     signed short battery_current = 0;
