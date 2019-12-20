@@ -265,6 +265,7 @@ static int bq40z50_ManufacturerBlockAccess_Read(unsigned short r_data_reg)
     return -1;
 }
 
+
 int bq40z50_get_Battery_Temperature(void)
 {
     unsigned char buf[16];
@@ -274,7 +275,7 @@ int bq40z50_get_Battery_Temperature(void)
 
     //Temperature
     reg = 0x08;
-    if(bq40z50_i2c_read(I2C_ADDR, &reg, 1, buf, 3) != 0)
+    if(bq40z50_i2c_read(I2C_ADDR, &reg, 1, buf, 2) != 0)
     {
         return -1;
     }
@@ -294,7 +295,7 @@ int bq40z50_get_Battery_Voltage(void)
 
     //Voltage
     reg = 0x09;
-    if(bq40z50_i2c_read(I2C_ADDR, &reg, 1, buf, 3) != 0)
+    if(bq40z50_i2c_read(I2C_ADDR, &reg, 1, buf, 2) != 0)
     {
         return -1;
     }
@@ -321,6 +322,44 @@ int bq40z50_get_Battery_Current(void)
     battery_current = (signed short)((buf[1]<<8) | buf[0]);
 
     printf("get battery Current %dmA\n", battery_current);
+}
+
+int bq40z50_get_RelativeStateOfCharge(void)
+{
+    unsigned char buf[16];
+    unsigned char reg;
+
+    unsigned short relative_state_of_charge = 0;
+
+    //RelativeStateOfCharge
+    reg = 0x0D;
+    if(bq40z50_i2c_read(I2C_ADDR, &reg, 1, buf, 2) != 0)
+    {
+        return -1;
+    }
+
+    relative_state_of_charge = (buf[1]<<8) | buf[0];
+
+    printf("get RelativeStateOfCharge %d%%\n", relative_state_of_charge);
+}
+
+int bq40z50_get_AbsoluteStateOfCharge(void)
+{
+    unsigned char buf[16];
+    unsigned char reg;
+
+    unsigned short absolute_state_of_charge = 0;
+
+    //AbsoluteStateOfCharge
+    reg = 0x0E;
+    if(bq40z50_i2c_read(I2C_ADDR, &reg, 1, buf, 2) != 0)
+    {
+        return -1;
+    }
+
+    absolute_state_of_charge = (buf[1]<<8) | buf[0];
+
+    printf("get Absolute State Of Charge %d%%\n", absolute_state_of_charge);
 }
 
 
@@ -366,6 +405,10 @@ int main(int argc, char* argv[])
     bq40z50_get_Battery_Voltage();
 
     bq40z50_get_Battery_Current();
+
+    bq40z50_get_RelativeStateOfCharge();
+
+    bq40z50_get_AbsoluteStateOfCharge();
 
     close(fd);
 

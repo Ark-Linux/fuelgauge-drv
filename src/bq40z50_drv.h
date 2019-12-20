@@ -19,5 +19,7 @@
 int bq40z50_get_Battery_Temperature(void);
 int bq40z50_get_Battery_Voltage(void);
 int bq40z50_get_Battery_Current(void);
+int bq40z50_get_RelativeStateOfCharge(void);
+int bq40z50_get_AbsoluteStateOfCharge(void);
 
 #endif
