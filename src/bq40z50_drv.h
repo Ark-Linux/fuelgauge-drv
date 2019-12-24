@@ -13,13 +13,12 @@
 #include<stdlib.h>
 
 
-#define  ManufacturerBlockAccess_REG    0x44
+int fuelgauge_i2c_open(unsigned char i2c_addr);
 
-
-int bq40z50_get_Battery_Temperature(void);
-int bq40z50_get_Battery_Voltage(void);
-int bq40z50_get_Battery_Current(void);
-int bq40z50_get_RelativeStateOfCharge(void);
-int bq40z50_get_AbsoluteStateOfCharge(void);
+int fuelgauge_get_Battery_Temperature(void);
+int fuelgauge_get_Battery_Voltage(void);
+int fuelgauge_get_Battery_Current(void);
+int fuelgauge_get_RelativeStateOfCharge(void);
+int fuelgauge_get_AbsoluteStateOfCharge(void);
 
 #endif

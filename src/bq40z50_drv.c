@@ -26,6 +26,9 @@ unsigned int I2C_ADDR = 0x0B; //7 bit address, (the 8 bit address is 0x16)
 static int fd;
 
 
+#define  ManufacturerBlockAccess_REG    0x44
+
+
 //supposed to be Little-endian
 static int check_endian(void)
 {
@@ -53,7 +56,7 @@ static int check_endian(void)
 }
 
 
-static int i2c_open(unsigned char i2c_addr)
+int fuelgauge_i2c_open(unsigned char i2c_addr)
 {
     int ret;
 
@@ -173,7 +176,7 @@ static int i2c_read(int fd, unsigned char addr, unsigned char *reg_w_list, unsig
 }
 
 
-int bq40z50_i2c_write(unsigned char dev_addr, unsigned char reg, unsigned char *val, unsigned char data_len)
+static int bq40z50_i2c_write(unsigned char dev_addr, unsigned char reg, unsigned char *val, unsigned char data_len)
 {
     unsigned char buf[80] = {0};
     int i;
@@ -202,7 +205,7 @@ int bq40z50_i2c_write(unsigned char dev_addr, unsigned char reg, unsigned char *
 }
 
 
-int bq40z50_i2c_read(unsigned char addr, unsigned char *reg_w_list, unsigned char reg_w_len, unsigned char *val, unsigned char data_len)
+static int bq40z50_i2c_read(unsigned char addr, unsigned char *reg_w_list, unsigned char reg_w_len, unsigned char *val, unsigned char data_len)
 {
     unsigned char buf[80] = {0};
     int i;
@@ -266,7 +269,7 @@ static int bq40z50_ManufacturerBlockAccess_Read(unsigned short r_data_reg)
 }
 
 
-int bq40z50_get_Battery_Temperature(void)
+int fuelgauge_get_Battery_Temperature(void)
 {
     unsigned char buf[16];
     unsigned char reg;
@@ -283,10 +286,12 @@ int bq40z50_get_Battery_Temperature(void)
     battery_temperature = (buf[1]<<8) | buf[0];
 
     printf("get battery Temperature %d * 0.1K\n", battery_temperature);
+
+    return battery_temperature;
 }
 
 
-int bq40z50_get_Battery_Voltage(void)
+int fuelgauge_get_Battery_Voltage(void)
 {
     unsigned char buf[16];
     unsigned char reg;
@@ -303,9 +308,11 @@ int bq40z50_get_Battery_Voltage(void)
     battery_voltage = (buf[1]<<8) | buf[0];
 
     printf("get battery Voltage %dmV\n", battery_voltage);
+
+    return battery_voltage;
 }
 
-int bq40z50_get_Battery_Current(void)
+int fuelgauge_get_Battery_Current(void)
 {
     unsigned char buf[16];
     unsigned char reg;
@@ -322,9 +329,11 @@ int bq40z50_get_Battery_Current(void)
     battery_current = (signed short)((buf[1]<<8) | buf[0]);
 
     printf("get battery Current %dmA\n", battery_current);
+
+    return battery_current;
 }
 
-int bq40z50_get_RelativeStateOfCharge(void)
+int fuelgauge_get_RelativeStateOfCharge(void)
 {
     unsigned char buf[16];
     unsigned char reg;
@@ -341,9 +350,11 @@ int bq40z50_get_RelativeStateOfCharge(void)
     relative_state_of_charge = (buf[1]<<8) | buf[0];
 
     printf("get RelativeStateOfCharge %d%%\n", relative_state_of_charge);
+
+    return relative_state_of_charge;
 }
 
-int bq40z50_get_AbsoluteStateOfCharge(void)
+int fuelgauge_get_AbsoluteStateOfCharge(void)
 {
     unsigned char buf[16];
     unsigned char reg;
@@ -360,6 +371,8 @@ int bq40z50_get_AbsoluteStateOfCharge(void)
     absolute_state_of_charge = (buf[1]<<8) | buf[0];
 
     printf("get Absolute State Of Charge %d%%\n", absolute_state_of_charge);
+
+    return absolute_state_of_charge;
 }
 
 
@@ -395,20 +408,20 @@ int main(int argc, char* argv[])
     printf("used i2c address is 0x%x\n",I2C_ADDR);
 
 
-    if(i2c_open(I2C_ADDR) != 0)
+    if(fuelgauge_i2c_open(I2C_ADDR) != 0)
     {
         return -1;
     }
 
-    bq40z50_get_Battery_Temperature();
+    fuelgauge_get_Battery_Temperature();
 
-    bq40z50_get_Battery_Voltage();
+    fuelgauge_get_Battery_Voltage();
 
-    bq40z50_get_Battery_Current();
+    fuelgauge_get_Battery_Current();
 
-    bq40z50_get_RelativeStateOfCharge();
+    fuelgauge_get_RelativeStateOfCharge();
 
-    bq40z50_get_AbsoluteStateOfCharge();
+    fuelgauge_get_AbsoluteStateOfCharge();
 
     close(fd);
 
